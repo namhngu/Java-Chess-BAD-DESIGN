@@ -1,3 +1,7 @@
+// Nam Nguyen
+// ChessBoard manages the entirety of the chess game. This chess game allows players to select the pieces
+// through the use arrow keys and the space bar. When a piece is selected, blue squares are displayed to
+// show spaces where the piece can move while red squares are displayed for spaces that the pieces can take.
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import java.awt.*;
@@ -9,7 +13,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.Timer;
 
 public class ChessBoard extends JPanel implements ActionListener {
-   
+
    private Image boardPic;
    private Image takeFrame;
    private Image moveFrame;
@@ -21,12 +25,11 @@ public class ChessBoard extends JPanel implements ActionListener {
    private Piece whiteKing;
    private Piece blackKing;
    private ArrayList<Piece> blackPieces = new ArrayList<Piece>();
-   private ArrayList<Piece> whitePieces = new ArrayList<Piece>();;
+   private ArrayList<Piece> whitePieces = new ArrayList<Piece>();
    private ArrayList<Point> moves = new ArrayList<Point>();
    private ArrayList<Point> specialMoves = new ArrayList<Point>();
    private SelectionTool selectTool;
    private Piece[][] pieces;
-   private Timer timer;
    private boolean selected;
    private Piece selectedPiece;
    private boolean endGame = false;
@@ -34,10 +37,14 @@ public class ChessBoard extends JPanel implements ActionListener {
    private final int PIX_SIZE = 480;
    private Pawn pawnDoubleJumped;
 
+   // Post:
+   // Initializes the chess board and graphics.
    public ChessBoard() {
       initBoard();
    }
-   
+
+   // Post:
+   // Initializes the chess board and graphics.
    private void initBoard() {
       whiteTurn = true;
       addKeyListener(new TAdapter());
@@ -54,23 +61,25 @@ public class ChessBoard extends JPanel implements ActionListener {
       loadPieces();
       
       loadEndScreens();
-      
-      int w = boardPic.getWidth(this);
-      int h = boardPic.getHeight(this);
+
       setPreferredSize(new Dimension(PIX_SIZE, PIX_SIZE));
       
       selected = false;
-      
-      timer = new Timer(DELAY, this);
+
+      Timer timer = new Timer(DELAY, this);
       timer.start(); 
    }
-   
+
+   // Post:
+   // Loads the images of the board.
    private void loadBoard() {
       ImageIcon boardIcon = new ImageIcon("Sprites\\board.png");
       boardPic = boardIcon.getImage();
       boardPic = boardPic.getScaledInstance(PIX_SIZE, PIX_SIZE, Image.SCALE_DEFAULT);
    }
-   
+
+   // Post:
+   // Loads the move and take squares in the chess game.
    private void loadSquares() {
       ImageIcon moveIcon = new ImageIcon("Sprites\\moveFrame.png");
       moveFrame = moveIcon.getImage();
@@ -78,12 +87,16 @@ public class ChessBoard extends JPanel implements ActionListener {
       ImageIcon takeIcon = new ImageIcon("Sprites\\takeFrame.png");
       takeFrame = takeIcon.getImage();
    }
-   
+
+   // Post:
+   // Loads the image of the shadow under the piece when the piece is moved
    private void loadShadow() {
       ImageIcon shadowIcon = new ImageIcon("Sprites\\shadow.png");
       shadow = shadowIcon.getImage();
    }
-   
+
+   // Post:
+   // Loads the images for the end screen
    private void loadEndScreens() {
       ImageIcon whiteWIcon = new ImageIcon("Sprites\\whiteWins.png");
       whiteWins = whiteWIcon.getImage();
@@ -94,7 +107,9 @@ public class ChessBoard extends JPanel implements ActionListener {
       ImageIcon staleIcon = new ImageIcon("Sprites\\stalemate.png");
       stalemate = staleIcon.getImage();
    }
-   
+
+   // Post:
+   // Loads all the pieces on the chess board.
    private void loadPieces() {
       whiteKing = new King(4,7,'W');
       blackKing = new King(4,0,'B');
@@ -128,8 +143,12 @@ public class ChessBoard extends JPanel implements ActionListener {
          }
       }
    }
-   
-   
+
+   // Pre:
+   //    g: The graphics object
+   //
+   // Post:
+   // Draws every frame for the game
    @Override
    public void paintComponent(Graphics g) {
       g.drawImage(boardPic, 0, 0, this);
@@ -143,11 +162,21 @@ public class ChessBoard extends JPanel implements ActionListener {
          drawEndGame(g);
       }
    }
-   
+
+   // Pre:
+   //    e: ActionEvent object
+   //
+   // Post:
+   // Repaints the screen for every frame
    public void actionPerformed(ActionEvent e) {
       repaint();
    }
-   
+
+   // Pre:
+   //    g: The graphics object
+   //
+   // Post:
+   // Draws the move/take squares of the piece chosen.
    private void drawSquares(Graphics g) {
       for (Point m : moves) {
          if (pieces[m.getY()][m.getX()] == null) {
@@ -165,14 +194,23 @@ public class ChessBoard extends JPanel implements ActionListener {
          }
       }
    }
-   
+
+   // Pre:
+   //    g: The graphics object
+   //
+   // Post:
+   // Draws the selection tool.
    private void drawSelectionTool(Graphics g) {
       if (selectTool.cycleBlink()) {
          g.drawImage(selectTool.getImage(), coordToPix(selectTool.getCoord().getX()), coordToPix(selectTool.getCoord().getY()), this);
       }
    }
-   
-   // Selected put the frame drawings with the new selectedpiece drawings also use array coordinates instead of display coordinates
+
+   // Pre:
+   //    g: The graphics object
+   //
+   // Post:
+   // Draws the pieces on the board as well as the piece that was picked up.
    private void drawPieces(Graphics g) {
       
       for (Piece p : whitePieces) {
@@ -191,7 +229,12 @@ public class ChessBoard extends JPanel implements ActionListener {
          g.drawImage(shadow, coordToPix(selectedPiece.getCoord().getX()), coordToPix(selectedPiece.getCoord().getY()), this);
       }
    }
-   
+
+   // Pre:
+   //    g: The graphics object
+   //
+   // Post:
+   // Draws the end game screen depending on whom won
    private void drawEndGame(Graphics g) {
       if (whiteTurn && isInDanger(whiteKing, pieces)) {
          g.drawImage(blackWins, 0, 0, this);
@@ -201,16 +244,24 @@ public class ChessBoard extends JPanel implements ActionListener {
          g.drawImage(stalemate, 0, 0, this);
       }
    }
-   
+
+   // Pre:
+   //    coord: one of the components of the coord (x or y value)
+   //
+   // Post:
+   // Returns the pixel equivalent to this coordinate.
    private int coordToPix(int coord) {
       return PIX_SIZE / 8 * coord;
    }
    
-   // Need to work on how to keep track whether its the objects first move or not
-   // Perhaps in the piece ovject we have animatedCoord and realCoord 
-   // work on reducing number of if statements
+   // TAdapter works as a key adapter, taking in inputs from keystrokes and calling functions accordingly.
    private class TAdapter extends KeyAdapter {
 
+      // Pre:
+      //    e: KeyEvent associated with the keystroke
+      //
+      // Post:
+      // Interprets the keystroke accordingly: moving pieces, deselecting pieces.
       @Override
       public void keyPressed(KeyEvent e) {
          if (!endGame) {
@@ -231,22 +282,7 @@ public class ChessBoard extends JPanel implements ActionListener {
                   }
                   // get special moves of piece
                } else {
-                  if (moves.contains(selectedPiece.getCoord())) {
-                     regularMove();
-                     changeTurn();
-                     passantUpdate();
-                  } else if (specialMoves.contains(selectedPiece.getCoord())) {
-                     if (selectedPiece instanceof Pawn) {
-                        passantMove();
-                        changeTurn();
-                     } else {
-                        castleMove();
-                        changeTurn();
-                     }
-                     passantUpdate();   // add special moves condition
-                  } else {
-                     selectedPiece.returnToOrigin();
-                  }
+                  calcMove();
                   moves = new ArrayList<Point>();
                   specialMoves = new ArrayList<Point>();
                }
@@ -256,7 +292,30 @@ public class ChessBoard extends JPanel implements ActionListener {
             }
          }
       }
-      
+
+      // Post:
+      // Interprets the move requested by the player.
+      private void calcMove() {
+         if (moves.contains(selectedPiece.getCoord())) {
+            regularMove();
+            changeTurn();
+            passantUpdate();
+         } else if (specialMoves.contains(selectedPiece.getCoord())) {
+            if (selectedPiece instanceof Pawn) {
+               passantMove();
+               changeTurn();
+            } else {
+               castleMove();
+               changeTurn();
+            }
+            passantUpdate();   // add special moves condition
+         } else {
+            selectedPiece.returnToOrigin();
+         }
+      }
+
+      // Post:
+      // Moves the piece to the requested spot.
       private void regularMove() {
          Piece pieceReplaced = pieces[selectedPiece.getCoord().getY()][selectedPiece.getCoord().getX()];
          whitePieces.remove(pieceReplaced);
@@ -265,7 +324,9 @@ public class ChessBoard extends JPanel implements ActionListener {
          pieces[selectedPiece.getCoord().getY()][selectedPiece.getCoord().getX()] = selectedPiece;
          selectedPiece.updateOrigin(); 
       }
-      
+
+      // Post:
+      // Moves the pawn to the requested spot and enacts the en passant rule.
       private void passantMove() {
          pieces[selectedPiece.getOrigin().getY()][selectedPiece.getOrigin().getX()] = null;
          Piece pieceReplaced = pieces[selectedPiece.getCoord().getY() + 1][selectedPiece.getCoord().getX()];
@@ -275,7 +336,9 @@ public class ChessBoard extends JPanel implements ActionListener {
          pieces[selectedPiece.getCoord().getY()][selectedPiece.getCoord().getX()] = selectedPiece; 
          selectedPiece.updateOrigin();
       }
-      
+
+      // Post:
+      // Moves the king/rook to the requested spot and enacts the castling rule.
       private void castleMove() {
          pieces[selectedPiece.getOrigin().getY()][selectedPiece.getOrigin().getX()] = null;
          if (selectedPiece.getCoord().getX() > 3) {
@@ -294,16 +357,18 @@ public class ChessBoard extends JPanel implements ActionListener {
          pieces[selectedPiece.getCoord().getY()][selectedPiece.getCoord().getX()] = selectedPiece; 
          selectedPiece.updateOrigin();
       }
-      
+
+      // Pre:
+      //    piece: the piece in question
+      //
+      // Post:
+      // Returns whether the piece is of the correct color or not for the turn.
       private boolean rightPiece(Piece piece) {
-         if (piece != null) {
-            if (piece.getColor() == 'W' && whiteTurn || piece.getColor() == 'B' && !whiteTurn) {
-               return true;
-            }
-         }
-         return false;
+         return piece != null && (piece.getColor() == 'W' && whiteTurn || piece.getColor() == 'B' && !whiteTurn);
       }
-      
+
+      // Post:
+      // Updates the pawn to be not vulnerable
       private void passantUpdate() {
          if (pawnDoubleJumped != null) {
             pawnDoubleJumped.notVulnerable();
@@ -313,21 +378,22 @@ public class ChessBoard extends JPanel implements ActionListener {
             pawnDoubleJumped = (Pawn) selectedPiece;
          }
       }
-      
+
+      // Post:
+      // Changes the turn of the game.
       private void changeTurn() {
          whiteTurn = !whiteTurn;
          pieces = reverseArray(pieces);
          endGame = isMate();
       }
-      
+
+      // Post:
+      // Checks if a king has been checkedmated or stalemated
       private boolean isMate() {
-         Piece king;
          ArrayList<Piece> allies;
          if (whiteTurn) {
-            king = whiteKing;
             allies = whitePieces;
          } else {
-            king = blackKing;
             allies = blackPieces;
          }
          
@@ -340,9 +406,12 @@ public class ChessBoard extends JPanel implements ActionListener {
          return true;
       }
       
-      // getcleanMoves of specialmoves
-      
-      // Issue with reversing array and then checking if the pawns can move or not
+      // Pre:
+      //    selectedPiece: the piece selected by the player
+      //
+      // Post:
+      // Cleans up the possible moves that the piece can do, removing the moves that may endanger the king
+      // of the piece. Returns the moves back.
       private ArrayList<Point> getCleanMoves(Piece selectedPiece) {
          ArrayList<Point> m = selectedPiece.getPossibleMoves(pieces);
          Piece king;
@@ -384,7 +453,13 @@ public class ChessBoard extends JPanel implements ActionListener {
          }
          return m;
       }
-      
+
+      // Pre:
+      //    pawn: the pawn selected by the player
+      //
+      // Post:
+      // Cleans up the passant moves that the pawn can do, removing the moves that may endanger the king
+      // of the piece. Returns the moves back.
       private ArrayList<Point> getCleanPassant(Pawn pawn) {
          ArrayList<Point> m = pawn.getPassantMoves(pieces);
          Piece king;
@@ -426,6 +501,12 @@ public class ChessBoard extends JPanel implements ActionListener {
          return m;
       }
 
+      // Pre:
+      //    king: the king selected by the player
+      //
+      // Post:
+      // Cleans up the castle moves that the king can do, removing the moves that may endanger the king.
+      // Returns the moves back.
       private ArrayList<Point> getCleanCastle(King king) {
          
          ArrayList<Point> m = king.getCastleMoves(pieces);
@@ -477,7 +558,13 @@ public class ChessBoard extends JPanel implements ActionListener {
       }
      
    }
-   
+
+   // Pre:
+   //    p: the piece in question
+   //    pieces: the array representing the chess board
+   //
+   // Post:
+   // Returns whether the piece in question is in danger or not.
    private boolean isInDanger(Piece p, Piece[][] pieces) {
       pieces = reverseArray(pieces);
       ArrayList<Piece> enemies;
@@ -496,7 +583,11 @@ public class ChessBoard extends JPanel implements ActionListener {
       return false;
    }
 
-   
+   // Pre:
+   //    original: the original array to be reversed
+   //
+   // Post:
+   // Inverts the array.
    private Piece[][] reverseArray(Piece[][] original) {
       Piece[][] reversed = new Piece[8][8];
       for (int i = 7; i >= 0; i--) {

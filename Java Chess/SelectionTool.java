@@ -1,15 +1,32 @@
+// Nam Nguyen
+// SelectionTool represents the selection tool used to pick up pieces on the board.
 import java.awt.event.KeyEvent;
-import java.awt.Graphics;
 public class SelectionTool extends Sprite {
 
+   // time for the selection tool to blink
    private int blinkTimer = 20;
+
+   // whether the tool is visible or not
    private boolean visible = true;
+
+   // whether a piece has been selected or not
    private boolean selected = false;
 
+   // Pre:
+   //    x: x-coordinate
+   //    y: y-coordinate
+   //
+   // Post:
+   // Constructs a selection tool at a specific x,y coordinate
    public SelectionTool(int x, int y) {
       super(x, y, "selectionFrame.png");
    }
-   
+
+   // Pre:
+   //    key: the integer representing the key press
+   //
+   // Post:
+   // Changes the display coordinates and appearance of the tool depending on the key press.
    public void keyPressed(int key, boolean pieceUnder) {
       
       if (key == KeyEvent.VK_SPACE && pieceUnder) {
@@ -46,7 +63,8 @@ public class SelectionTool extends Sprite {
          }
       }
    }
-   
+
+   // Post:
    // Returns true/false depending on the cycle of blinking
    public boolean cycleBlink() {
       if (!selected) {
@@ -54,7 +72,7 @@ public class SelectionTool extends Sprite {
             visible = !(visible);
             blinkTimer = 20;
          } else {
-            blinkTimer += -1;
+            blinkTimer -= 1;
          }
       } else {
          visible = true;

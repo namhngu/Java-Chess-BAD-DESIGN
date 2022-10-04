@@ -1,13 +1,19 @@
-// Point object used for the coordinates of the pieces
+// Nam Nguyen
+// Point object used for the coordinates
 public class Point {
    
-   // x coord
+   // x coordinate
    private int x;
    
-   // y coord
+   // y coordinate
    private int y;
 
-   // Constructs a Point object with "x" x-coord and "y" y-coord
+   // Pre:
+   //    x: x-coordinate
+   //    y: y-coordinate
+   //
+   // Post:
+   // Constructs a point with a specific x and y coordinate
    public Point(int x, int y) {
       this.x = x;
       this.y = y;
@@ -21,32 +27,52 @@ public class Point {
       }
       return false;
    }
-   
-   // 
-   public Point update(int x, int y) {
-      return new Point(x, y);
-   }
-   
+
+   // Pre:
+   //    addX: Integer you want to add to the x of the point
+   //    addY: Integer you want to add to the y of the point
+   //
+   // Post:
+   // Returns a point representing the sum of this point plus the additions
    public Point sum(int addX, int addY) {
       return new Point(this.x + addX, this.y + addY);
    }
-   
+
+   // Pre:
+   //    p2: The point you want to add to this point
+   //
+   // Post:
+   // Returns a point representing the sum of this point plus the given point
    public Point sum(Point p2) {
       return new Point(this.x + p2.x, this.y + p2.y);
    }
-   
+
+   // Pre:
+   //    p2: The point you want to minus this point with
+   //
+   // Post:
+   // Returns a point representing the difference between this point minus the given
    public Point difference(Point p2) {
       return new Point(this.x - p2.x, this.y - p2.y);
    }
-   
+
+
+   // Post:
+   // Returns the x coordinate of this point
    public int getX() {
       return this.x;
    }
-   
+
+
+   // Post:
+   // Returns the y coordinate of this point
    public int getY() {
       return this.y;
    }
-   
+
+
+   // Post:
+   // Returns the string representation of this point
    public String toString() {
       return ("(" + x + "," + y + ")");
    }
